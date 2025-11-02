@@ -19,5 +19,6 @@ COPY app /app/app
 CMD sh -c "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080}"
 
 
+
 CMD ["sh","-c","echo Using PORT=${PORT:-8080}; uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080}"]
 
