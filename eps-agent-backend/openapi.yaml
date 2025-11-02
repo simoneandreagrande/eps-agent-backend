@@ -1,0 +1,79 @@
+openapi: 3.0.2
+info:
+  title: Finance EPS Service
+  version: "1.0"
+servers:
+  - url: https://REPLACE_WITH_YOUR_BASE_URL
+paths:
+  /proforma:
+    post:
+      summary: Compute pro forma EPS and EPS accretion/dilution
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [acquirer, target, structure]
+              properties:
+                acquirer: { type: string, description: "Yahoo ticker, e.g., AAPL" }
+                target:   { type: string, description: "Yahoo ticker, e.g., ADBE" }
+                structure:
+                  type: object
+                  required: [type]
+                  properties:
+                    type: { type: string, enum: [cash, stock, mix] }
+                    exchange_ratio: { type: number, nullable: true }
+                    new_debt: { type: number, default: 0 }
+                    cost_of_debt: { type: number, default: 0.06 }
+                    cash_used: { type: number, default: 0 }
+                    lost_interest: { type: number, default: 0.03 }
+                    synergies_pre_tax: { type: number, default: 0 }
+                    tax_rate: { type: number, default: 0.25 }
+                    ppa_amort_post_tax: { type: number, default: 0 }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  eps_pf: { type: number, nullable: true }
+                  eps_acq: { type: number, nullable: true }
+                  accretion_pct: { type: number, nullable: true, description: "e.g., 0.07 = +7%" }
+                  bridge:
+                    type: object
+                    properties:
+                      ni_pf: { type: number }
+                      ni_acq: { type: number }
+                      ni_tgt: { type: number }
+                      synergies_net: { type: number }
+                      interest_new_debt_net: { type: number }
+                      interest_lost_net: { type: number }
+                      ppa_amort_post_tax: { type: number }
+                      shares_pf: { type: number }
+                      shares_acq: { type: number }
+                  notes: { type: string }
+  /basics:
+    get:
+      summary: Basic fields for a Yahoo Finance ticker
+      parameters:
+        - in: query
+          name: ticker
+          schema: { type: string }
+          required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  price: { type: number, nullable: true }
+                  shares: { type: number, nullable: true }
+                  eps_ttm: { type: number, nullable: true }
+                  ni_ttm: { type: number, nullable: true }
+                  currency: { type: string, nullable: true }
+                  notes: { type: string, nullable: true }
