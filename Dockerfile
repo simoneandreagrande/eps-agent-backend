@@ -17,3 +17,6 @@ COPY app /app/app
 
 # Avvio (PORT letto dall'ambiente; default 8080)
 CMD ["sh","-c","uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080}"]
+
+CMD ["sh","-c","echo Using PORT=${PORT:-8080}; uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080}"]
+
